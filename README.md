@@ -47,13 +47,6 @@
 | CES251s     | Structures and Properties of Construction Materials     |
 | PHM212s     | Differential Equations for Civil Engineering            |
 
-**مصدر الجدول**:  
-الصفحة الأولى من ملف `260922E - Timetables_Civil.pdf`  
-(UG2023 Specialized Programs — General Civil Engineering — Sophomore — Group 1)
-
----
-
-## طريقة التشغيل
 
 افتح الرابط مباشرة في المتصفح:
 
