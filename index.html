@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Civil Engineering Schedule | Sophomore Section 1 | Ain Shams University</title>
-  <meta name="description" content="Interactive cinematic study schedule for Civil Engineering Sophomore Section 1 at Ain Shams University Faculty of Engineering." />
+  <title>ASU Civil Sophomore Schedule | Ain Shams University</title>
+  <meta name="description" content="Interactive cinematic study schedule for Civil Engineering Sophomore (CES / CEP / CEI) at Ain Shams University Faculty of Engineering." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cairo:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -178,58 +178,70 @@
   <script type="text/babel" data-presets="react">
     const { useState, useEffect, useRef, useCallback, useMemo } = React;
 
-    // ========== SCHEDULE DATA — UG23SPCEG Sophomore Group 1 + Registration Form ==========
-    // Section 1 & Section 2 from official timetable page 1. Registered courses only.
+    // ========== SCHEDULE DATA — UG23SPCEG Sophomore Group 1 (260925E) ==========
+    // Departments: 1-CES | 1-CEP | 1-CEI — full course names from official timetable page 1
     const SCHEDULE_DATA = {
       academicYear: "2025-2026",
-      department: "Civil & Structural Engineering Department",
+      department: "Civil Engineering Department",
       days: ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      sectionOrder: ["1-CES", "1-CEP", "1-CEI"],
       sections: {
-        1: [
-          // Saturday
+        "1-CES": [
+          { day: "Saturday", startTime: "08:00", endTime: "09:50", name: "Hydraulics", type: "Tut & Lab", room: "701B", category: "hydro", raw: "Hydraulics (CEI212s) Tut & Lab 701B" },
           { day: "Saturday", startTime: "10:00", endTime: "11:50", name: "Fluid Mechanics", type: "Lab (Biweekly)", room: "255", category: "fluid", raw: "Fluid Mechanics (CEI211s) Lab Biweekly 255" },
           { day: "Saturday", startTime: "12:30", endTime: "14:20", name: "Introduction to Plane Surveying", type: "Lab", room: "Offline", category: "survey", raw: "Introduction to Plane Surveying (CEP211s) Lab Offline" },
-          { day: "Saturday", startTime: "14:30", endTime: "16:20", name: "Introduction to Plane Surveying", type: "Lec", room: "261", category: "survey", raw: "Introduction to Plane Surveying (CEP211s) Lec 261" },
+          { day: "Saturday", startTime: "14:30", endTime: "16:20", name: "Introduction to Plane Surveying", type: "Lec", room: "Hall 2", category: "survey", raw: "Introduction to Plane Surveying (CEP211s) Lec Hall 2" },
           { day: "Saturday", startTime: "16:30", endTime: "18:20", name: "Differential Equations for Civil Engineering", type: "Lec", room: "Hall 3", category: "math", raw: "Differential Equations for Civil Engineering (PHM212s) Lec Hall 3" },
-          // Sunday
-          { day: "Sunday", startTime: "08:00", endTime: "08:50", name: "Introduction to Plane Surveying", type: "Tut (Biweekly)", room: "711B", category: "survey", raw: "Introduction to Plane Surveying (CEP211s) Tut Biweekly 711B" },
+          { day: "Sunday", startTime: "08:00", endTime: "09:50", name: "Introduction to Plane Surveying", type: "Tut & Lab", room: "711B", category: "survey", raw: "Introduction to Plane Surveying (CEP211s) Tut & Lab 711B" },
+          { day: "Sunday", startTime: "10:00", endTime: "11:50", name: "Hydraulics", type: "Lec", room: "Hall 2", category: "hydro", raw: "Hydraulics (CEI212s) Lec Hall 2" },
+          { day: "Sunday", startTime: "12:30", endTime: "14:20", name: "Structural Mechanics (2)", type: "Lec", room: "331", category: "struct", raw: "Structural Mechanics (2) (CES212s) Lec 331" },
           { day: "Sunday", startTime: "16:30", endTime: "18:20", name: "Fluid Mechanics", type: "Tut", room: "328", category: "fluid", raw: "Fluid Mechanics (CEI211s) Tut 328" },
-          // Monday
           { day: "Monday", startTime: "08:00", endTime: "08:50", name: "Differential Equations for Civil Engineering", type: "Tut (Biweekly)", room: "202C", category: "math", raw: "Differential Equations for Civil Engineering (PHM212s) Tut Biweekly 202C" },
           { day: "Monday", startTime: "10:00", endTime: "11:50", name: "Engineering Hydrology", type: "Tut (Biweekly)", room: "202C", category: "hydro", raw: "Engineering Hydrology (CEI241s) Tut Biweekly 202C" },
           { day: "Monday", startTime: "12:30", endTime: "15:20", name: "Structural Mechanics (1)", type: "Lec", room: "Hall D", category: "struct", raw: "Structural Mechanics (1) (CES211s) Lec Hall D" },
-          // Tuesday
+          { day: "Monday", startTime: "18:30", endTime: "19:20", name: "Structural Mechanics (2)", type: "Tut", room: "Hall D", category: "struct", raw: "Structural Mechanics (2) (CES212s) Tut Hall D" },
           { day: "Tuesday", startTime: "08:00", endTime: "09:50", name: "Engineering Hydrology", type: "Lec", room: "Hall 2", category: "hydro", raw: "Engineering Hydrology (CEI241s) Lec Hall 2" },
           { day: "Tuesday", startTime: "12:30", endTime: "15:20", name: "Fluid Mechanics", type: "Lec", room: "Hall 3", category: "fluid", raw: "Fluid Mechanics (CEI211s) Lec Hall 3" },
-          // Thursday
           { day: "Thursday", startTime: "08:00", endTime: "09:50", name: "Civil Drawing", type: "Lec (Biweekly)", room: "Hall 1", category: "drawing", raw: "Civil Drawing (CEI231s) Lec Biweekly Hall 1" },
           { day: "Thursday", startTime: "10:00", endTime: "11:50", name: "Structures and Properties of Construction Materials", type: "Lec", room: "Hall 1", category: "materials", raw: "Structures and Properties of Construction Materials (CES251s) Lec Hall 1" },
           { day: "Thursday", startTime: "12:30", endTime: "14:20", name: "Structural Mechanics (1)", type: "Tut", room: "711A", category: "struct", raw: "Structural Mechanics (1) (CES211s) Tut 711A" },
           { day: "Thursday", startTime: "14:30", endTime: "16:20", name: "Civil Drawing", type: "Tut", room: "711A", category: "drawing", raw: "Civil Drawing (CEI231s) Tut 711A" },
           { day: "Thursday", startTime: "17:30", endTime: "19:20", name: "Structures and Properties of Construction Materials", type: "Tut (Biweekly)", room: "260C", category: "materials", raw: "Structures and Properties of Construction Materials (CES251s) Tut Biweekly 260C" },
         ],
-        2: [
-          // Saturday
+        "1-CEP": [
+          { day: "Saturday", startTime: "08:00", endTime: "09:50", name: "Introduction to Plane Surveying", type: "Lab", room: "Offline", category: "survey", raw: "Introduction to Plane Surveying (CEP211s) Lab Offline" },
           { day: "Saturday", startTime: "10:00", endTime: "11:50", name: "Introduction to Plane Surveying", type: "Lab", room: "Offline", category: "survey", raw: "Introduction to Plane Surveying (CEP211s) Lab Offline" },
           { day: "Saturday", startTime: "12:30", endTime: "14:20", name: "Fluid Mechanics", type: "Lab (Biweekly)", room: "255", category: "fluid", raw: "Fluid Mechanics (CEI211s) Lab Biweekly 255" },
-          { day: "Saturday", startTime: "14:30", endTime: "16:20", name: "Introduction to Plane Surveying", type: "Lec", room: "261", category: "survey", raw: "Introduction to Plane Surveying (CEP211s) Lec 261" },
+          { day: "Saturday", startTime: "14:30", endTime: "16:20", name: "Introduction to Plane Surveying", type: "Lec", room: "Hall 2", category: "survey", raw: "Introduction to Plane Surveying (CEP211s) Lec Hall 2" },
           { day: "Saturday", startTime: "16:30", endTime: "18:20", name: "Differential Equations for Civil Engineering", type: "Lec", room: "Hall 3", category: "math", raw: "Differential Equations for Civil Engineering (PHM212s) Lec Hall 3" },
-          // Sunday
-          { day: "Sunday", startTime: "08:00", endTime: "08:50", name: "Introduction to Plane Surveying", type: "Tut (Biweekly)", room: "711B", category: "survey", raw: "Introduction to Plane Surveying (CEP211s) Tut Biweekly 711B" },
+          { day: "Sunday", startTime: "10:00", endTime: "11:50", name: "Hydraulics", type: "Lec", room: "Hall 2", category: "hydro", raw: "Hydraulics (CEI212s) Lec Hall 2" },
           { day: "Sunday", startTime: "16:30", endTime: "18:20", name: "Fluid Mechanics", type: "Tut", room: "331", category: "fluid", raw: "Fluid Mechanics (CEI211s) Tut 331" },
-          // Monday
           { day: "Monday", startTime: "08:00", endTime: "08:50", name: "Differential Equations for Civil Engineering", type: "Tut (Biweekly)", room: "202C", category: "math", raw: "Differential Equations for Civil Engineering (PHM212s) Tut Biweekly 202C" },
-          { day: "Monday", startTime: "10:00", endTime: "11:50", name: "Engineering Hydrology", type: "Tut (Biweekly)", room: "202C", category: "hydro", raw: "Engineering Hydrology (CEI241s) Tut Biweekly 202C" },
           { day: "Monday", startTime: "12:30", endTime: "15:20", name: "Structural Mechanics (1)", type: "Lec", room: "Hall D", category: "struct", raw: "Structural Mechanics (1) (CES211s) Lec Hall D" },
-          // Tuesday
           { day: "Tuesday", startTime: "08:00", endTime: "09:50", name: "Engineering Hydrology", type: "Lec", room: "Hall 2", category: "hydro", raw: "Engineering Hydrology (CEI241s) Lec Hall 2" },
-          { day: "Tuesday", startTime: "10:00", endTime: "11:50", name: "Engineering Hydrology", type: "Tut", room: "344", category: "hydro", raw: "Engineering Hydrology (CEI241s) Tut 344" },
           { day: "Tuesday", startTime: "12:30", endTime: "15:20", name: "Fluid Mechanics", type: "Lec", room: "Hall 3", category: "fluid", raw: "Fluid Mechanics (CEI211s) Lec Hall 3" },
-          // Thursday
           { day: "Thursday", startTime: "08:00", endTime: "09:50", name: "Civil Drawing", type: "Lec (Biweekly)", room: "Hall 1", category: "drawing", raw: "Civil Drawing (CEI231s) Lec Biweekly Hall 1" },
           { day: "Thursday", startTime: "10:00", endTime: "11:50", name: "Structures and Properties of Construction Materials", type: "Lec", room: "Hall 1", category: "materials", raw: "Structures and Properties of Construction Materials (CES251s) Lec Hall 1" },
           { day: "Thursday", startTime: "12:30", endTime: "14:20", name: "Civil Drawing", type: "Tut", room: "711B", category: "drawing", raw: "Civil Drawing (CEI231s) Tut 711B" },
           { day: "Thursday", startTime: "15:30", endTime: "16:20", name: "Structural Mechanics (1)", type: "Tut", room: "711B", category: "struct", raw: "Structural Mechanics (1) (CES211s) Tut 711B" },
+          { day: "Thursday", startTime: "17:30", endTime: "19:20", name: "Structures and Properties of Construction Materials", type: "Tut (Biweekly)", room: "260C", category: "materials", raw: "Structures and Properties of Construction Materials (CES251s) Tut Biweekly 260C" },
+        ],
+        "1-CEI": [
+          { day: "Saturday", startTime: "10:00", endTime: "11:50", name: "Fluid Mechanics", type: "Lab (Biweekly)", room: "255", category: "fluid", raw: "Fluid Mechanics (CEI211s) Lab Biweekly 255" },
+          { day: "Saturday", startTime: "14:30", endTime: "16:20", name: "Introduction to Plane Surveying", type: "Lec", room: "Hall 2", category: "survey", raw: "Introduction to Plane Surveying (CEP211s) Lec Hall 2" },
+          { day: "Saturday", startTime: "16:30", endTime: "18:20", name: "Differential Equations for Civil Engineering", type: "Lec", room: "Hall 3", category: "math", raw: "Differential Equations for Civil Engineering (PHM212s) Lec Hall 3" },
+          { day: "Sunday", startTime: "10:00", endTime: "11:50", name: "Hydraulics", type: "Lec", room: "Hall 2", category: "hydro", raw: "Hydraulics (CEI212s) Lec Hall 2" },
+          { day: "Sunday", startTime: "12:30", endTime: "14:20", name: "Introduction to Plane Surveying", type: "Tut & Lab", room: "Offline", category: "survey", raw: "Introduction to Plane Surveying (CEP211s) Tut & Lab Offline" },
+          { day: "Sunday", startTime: "14:30", endTime: "15:20", name: "Fluid Mechanics", type: "Tut", room: "304C", category: "fluid", raw: "Fluid Mechanics (CEI211s) Tut 304C" },
+          { day: "Monday", startTime: "08:00", endTime: "08:50", name: "Differential Equations for Civil Engineering", type: "Tut (Biweekly)", room: "202C", category: "math", raw: "Differential Equations for Civil Engineering (PHM212s) Tut Biweekly 202C" },
+          { day: "Monday", startTime: "12:30", endTime: "15:20", name: "Structural Mechanics (1)", type: "Lec", room: "Hall D", category: "struct", raw: "Structural Mechanics (1) (CES211s) Lec Hall D" },
+          { day: "Tuesday", startTime: "08:00", endTime: "09:50", name: "Engineering Hydrology", type: "Lec", room: "Hall 2", category: "hydro", raw: "Engineering Hydrology (CEI241s) Lec Hall 2" },
+          { day: "Tuesday", startTime: "10:00", endTime: "11:50", name: "Engineering Hydrology", type: "Tut (Biweekly)", room: "344", category: "hydro", raw: "Engineering Hydrology (CEI241s) Tut Biweekly 344" },
+          { day: "Tuesday", startTime: "12:30", endTime: "15:20", name: "Fluid Mechanics", type: "Lec", room: "Hall 3", category: "fluid", raw: "Fluid Mechanics (CEI211s) Lec Hall 3" },
+          { day: "Thursday", startTime: "08:00", endTime: "09:50", name: "Civil Drawing", type: "Lec (Biweekly)", room: "Hall 1", category: "drawing", raw: "Civil Drawing (CEI231s) Lec Biweekly Hall 1" },
+          { day: "Thursday", startTime: "10:00", endTime: "11:50", name: "Structures and Properties of Construction Materials", type: "Lec", room: "Hall 1", category: "materials", raw: "Structures and Properties of Construction Materials (CES251s) Lec Hall 1" },
+          { day: "Thursday", startTime: "12:30", endTime: "14:20", name: "Structural Mechanics (1)", type: "Tut", room: "701A", category: "struct", raw: "Structural Mechanics (1) (CES211s) Tut 701A" },
+          { day: "Thursday", startTime: "14:30", endTime: "15:20", name: "Civil Drawing", type: "Tut", room: "257", category: "drawing", raw: "Civil Drawing (CEI231s) Tut 257" },
           { day: "Thursday", startTime: "17:30", endTime: "19:20", name: "Structures and Properties of Construction Materials", type: "Tut (Biweekly)", room: "260C", category: "materials", raw: "Structures and Properties of Construction Materials (CES251s) Tut Biweekly 260C" },
         ]
       }
@@ -479,27 +491,26 @@
             Civil Engineering
           </h1>
           <p className="mt-2 text-lg md:text-xl text-warmyellow/90 font-medium tracking-wide">
-            Sophomore — Section {section}
+            Sophomore — {section}
           </p>
           <div className="mt-3.5 flex justify-center gap-2 text-[11px] text-warmwhite/35">
             <span>Academic Year 2025-2026</span>
             <span aria-hidden="true">·</span>
-            <span>Structural Engineering</span>
+            <span>General Civil Engineering</span>
           </div>
-          {/* Section switcher */}
-          <div className="mt-6 flex justify-center gap-2">
-            {[1, 2].map((s) => (
+          <div className="mt-6 flex flex-wrap justify-center gap-2 px-2">
+            {SCHEDULE_DATA.sectionOrder.map((s) => (
               <button
                 key={s}
                 onClick={() => onSectionChange(s)}
-                className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+                className={`px-4 py-2 rounded-full text-xs md:text-sm font-medium transition-all duration-300 ${
                   section === s
-                    ? 'bg-goldenamber/20 text-goldenamber border border-goldenamber/40 shadow-[0_0_20px_rgba(245,182,66,0.15)]'
+                    ? 'bg-goldenamber/20 text-goldenamber border border-goldenamber/40 shadow-[0_0_16px_rgba(245,182,66,0.15)]'
                     : 'bg-white/[0.04] text-warmwhite/45 border border-white/[0.08] hover:text-warmwhite/70 hover:border-white/15'
                 }`}
                 aria-pressed={section === s}
               >
-                Section {s}
+                {s}
               </button>
             ))}
           </div>
@@ -575,10 +586,10 @@
               Designed & Developed by Abdelrahman Ashraf
             </p>
             <p className="text-warmwhite/35 text-xs mt-1.5 tracking-wider">
-              2401727 — Civil Engineering Student — Ain Shams University
+              2401727 — Civil Engineering — Ain Shams University
             </p>
             <p className="mt-4 text-[10px] tracking-[0.35em] text-goldenamber/30">
-              CIVIL ENGINEERING // SOPHOMORE // SECTION 0{section}
+              CIVIL ENGINEERING // SOPHOMORE // {section}
             </p>
           </div>
         </footer>
@@ -604,10 +615,10 @@
 
     // App
     function App() {
-      const [phase, setPhase] = useState('loading'); // loading | dark | activating | lit
+      const [phase, setPhase] = useState('loading');
       const [lightOn, setLightOn] = useState(false);
       const [reducedMotion, setReducedMotion] = useState(false);
-      const [section, setSection] = useState(1);
+      const [section, setSection] = useState("1-CES");
 
       const courses = SCHEDULE_DATA.sections[section] || [];
 
@@ -648,7 +659,6 @@
 
       return (
         <div className={`relative min-h-screen transition-colors duration-1000 ${lightOn ? 'bg-nearblack' : 'bg-black'}`}>
-          {/* Warm radial bloom */}
           {lightOn && (
             <div
               className="fixed inset-0 pointer-events-none z-0 reveal-light"
@@ -668,7 +678,6 @@
 
           <DustParticles active={lightOn} />
 
-          {/* Loading */}
           {phase === 'loading' && (
             <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-black">
               <div className="w-11 h-14 rounded-full bulb-glass pulse-glow mb-5" />
