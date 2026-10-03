@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Civil Engineering Schedule | Sophomore Section 1 | Ain Shams University</title>
+  <title>ASU Civil Sophomore Schedule | Ain Shams University</title>
   <meta name="description" content="Interactive cinematic study schedule for Civil Engineering Sophomore Section 1 at Ain Shams University Faculty of Engineering." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -168,77 +168,46 @@
     }
 
     /* Live clock */
-    .live-clock {
-      font-variant-numeric: tabular-nums;
-      letter-spacing: 0.04em;
-    }
+    .live-clock { font-variant-numeric: tabular-nums; letter-spacing: 0.04em; }
     .live-clock-time {
-      color: #FFD166;
-      font-weight: 600;
+      color: #FFD166; font-weight: 600;
       text-shadow: 0 0 12px rgba(245, 182, 66, 0.25);
     }
-
-    /* Active / live course card */
+    /* Active course — highlight only, never hide */
     .course-card-live {
-      border-color: rgba(245, 182, 66, 0.35) !important;
-      background: linear-gradient(135deg, rgba(245, 182, 66, 0.08), rgba(17, 17, 17, 0.9)) !important;
-      box-shadow: 0 0 0 1px rgba(245, 182, 66, 0.2), 0 0 28px rgba(245, 182, 66, 0.12);
-      animation: live-breathe 2.8s ease-in-out infinite;
-    }
-    @keyframes live-breathe {
-      0%, 100% { box-shadow: 0 0 0 1px rgba(245, 182, 66, 0.18), 0 0 22px rgba(245, 182, 66, 0.08); }
-      50% { box-shadow: 0 0 0 1px rgba(245, 182, 66, 0.32), 0 0 32px rgba(245, 182, 66, 0.16); }
+      border-color: rgba(245, 182, 66, 0.4) !important;
+      background: linear-gradient(135deg, rgba(245, 182, 66, 0.1), rgba(17, 17, 17, 0.92)) !important;
+      box-shadow: 0 0 0 1px rgba(245, 182, 66, 0.22), 0 0 28px rgba(245, 182, 66, 0.12);
     }
     .live-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 2px 8px;
-      border-radius: 999px;
-      font-size: 9px;
-      font-weight: 700;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: #050505;
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 2px 8px; border-radius: 999px;
+      font-size: 9px; font-weight: 700; letter-spacing: 0.14em;
+      text-transform: uppercase; color: #050505;
       background: linear-gradient(90deg, #FFD166, #F5B642);
       box-shadow: 0 0 12px rgba(245, 182, 66, 0.4);
     }
     .live-dot {
-      width: 5px; height: 5px;
-      border-radius: 50%;
-      background: #050505;
+      width: 5px; height: 5px; border-radius: 50%; background: #050505;
       animation: live-dot-pulse 1.2s ease-in-out infinite;
     }
     @keyframes live-dot-pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.45; transform: scale(0.85); }
+      0%, 100% { opacity: 1; } 50% { opacity: 0.4; }
     }
-
-    /* Today day section */
     .day-section-today {
       border-color: rgba(245, 182, 66, 0.22) !important;
       background: rgba(245, 182, 66, 0.04) !important;
-      box-shadow: inset 0 0 40px rgba(245, 182, 66, 0.03);
     }
-    .day-title-today {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
+    .day-title-today { display: inline-flex; align-items: center; gap: 8px; }
     .today-pill {
-      font-size: 9px;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: #FFD166;
+      font-size: 9px; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: #FFD166;
       background: rgba(245, 182, 66, 0.12);
       border: 1px solid rgba(245, 182, 66, 0.28);
-      padding: 2px 7px;
-      border-radius: 999px;
+      padding: 2px 7px; border-radius: 999px;
     }
-
     @media (prefers-reduced-motion: reduce) {
-      .course-card-live, .live-dot { animation: none !important; }
+      .live-dot { animation: none !important; }
     }
   </style>
 </head>
@@ -249,37 +218,77 @@
   <script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone@7.26.5/babel.min.js"></script>
 
+  
   <script type="text/babel" data-presets="react">
     const { useState, useEffect, useRef, useCallback, useMemo } = React;
 
-    // ========== SCHEDULE DATA — parsed from Engineering_Class_Schedule.xlsx ==========
-    // Single source of truth. No invented courses, rooms, or times.
+    // ========== SCHEDULE DATA — UG23SPCEG Sophomore Group 1 (260925E) ==========
+    // Departments: 1-CES | 1-CEP | 1-CEI — full names from official timetable page 1
     const SCHEDULE_DATA = {
       academicYear: "2025-2026",
-      department: "Civil & Structural Engineering Department",
+      department: "Civil Engineering Department",
       days: ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-      courses: [
-        // Saturday
-        { day: "Saturday", startTime: "10:00", endTime: "11:50", name: "Fluid Mechanics Lab", type: "Lab", room: null, category: "fluid", raw: "Fluid Mechanics Lab" },
-        { day: "Saturday", startTime: "12:30", endTime: "14:20", name: "Introduction to Plane Surveying Lab", type: "Lab", room: null, category: "survey", raw: "introduction to Plane Surveying Lab" },
-        { day: "Saturday", startTime: "14:30", endTime: "16:20", name: "Introduction to Plane Surveying", type: "Lec", room: "261", category: "survey", raw: "introduction to Plane Surveying Lec 261" },
-        { day: "Saturday", startTime: "16:30", endTime: "18:20", name: "Differential Equations for Civil Engineering", type: "Lec", room: "h3", category: "math", raw: "Differential Equations for Civil Engineering Lec h3" },
-        // Sunday
-        { day: "Sunday", startTime: "10:00", endTime: "11:50", name: "Differential Equations for Civil Engineering", type: "Tut", room: "331", category: "math", raw: "Differential Equations for Civil\nEngineering Tut 331" },
-        { day: "Sunday", startTime: "12:30", endTime: "14:20", name: "Introduction to Plane Surveying", type: "Tut", room: "331", category: "survey", raw: "Introduction to Plane Surveying Tut 331" },
-        { day: "Sunday", startTime: "14:30", endTime: "16:20", name: "Fluid Mechanics", type: "Tut", room: "331", category: "fluid", raw: "Fluid Mechanics Tut 331" },
-        // Monday
-        { day: "Monday", startTime: "12:30", endTime: "15:20", name: "Structural Mechanics (1)", type: "Lec", room: "H.D", category: "struct", raw: "Structural Mechanics (1) Lec H.D" },
-        // Tuesday
-        { day: "Tuesday", startTime: "08:00", endTime: "09:50", name: "Engineering Hydrology", type: "Lec", room: "H.2", category: "hydro", raw: "Engineering Hydrology Lec.H.2" },
-        { day: "Tuesday", startTime: "12:30", endTime: "15:20", name: "Fluid Mechanics", type: "Lec", room: "H.3", category: "fluid", raw: "Fluid Mechanics Lec.H.3" },
-        // Thursday
-        { day: "Thursday", startTime: "08:00", endTime: "09:50", name: "Civil Drawing", type: "Lec", room: "H.1", category: "drawing", raw: "Civil Drawing Lec.H.1" },
-        { day: "Thursday", startTime: "10:00", endTime: "11:50", name: "Structures and Properties of Construction Materials", type: "Lec", room: "H.1", category: "materials", raw: "Structures and Properties of Construction Materials Lec.H.1" },
-        { day: "Thursday", startTime: "12:30", endTime: "14:20", name: "Structural Mechanics (1)", type: "Tut", room: "711A", category: "struct", raw: "Structural Mechanics (1) Tut 711A" },
-        { day: "Thursday", startTime: "14:30", endTime: "16:20", name: "Civil Drawing", type: "Lec/Tut", room: "711A", category: "drawing", raw: "Civil Drawing Lec.Tut 711A" },
-        { day: "Thursday", startTime: "17:30", endTime: "19:20", name: "Structures and Properties of Construction Materials", type: "Tut", room: "260C", category: "materials", raw: "Structures and Properties of Construction Materials Tut 260C" },
-      ]
+      sectionOrder: ["1-CES", "1-CEP", "1-CEI"],
+      sections: {
+        "1-CES": [
+          { day: "Saturday", startTime: "08:00", endTime: "09:50", name: "Hydraulics", type: "Tut & Lab", room: "701B", category: "hydro", raw: "Hydraulics (CEI212s) Tut & Lab 701B" },
+          { day: "Saturday", startTime: "10:00", endTime: "11:50", name: "Fluid Mechanics", type: "Lab (Biweekly)", room: "255", category: "fluid", raw: "Fluid Mechanics (CEI211s) Lab Biweekly 255" },
+          { day: "Saturday", startTime: "12:30", endTime: "14:20", name: "Introduction to Plane Surveying", type: "Lab", room: "Offline", category: "survey", raw: "Introduction to Plane Surveying (CEP211s) Lab Offline" },
+          { day: "Saturday", startTime: "14:30", endTime: "16:20", name: "Introduction to Plane Surveying", type: "Lec", room: "Hall 2", category: "survey", raw: "Introduction to Plane Surveying (CEP211s) Lec Hall 2" },
+          { day: "Saturday", startTime: "16:30", endTime: "18:20", name: "Differential Equations for Civil Engineering", type: "Lec", room: "Hall 3", category: "math", raw: "Differential Equations for Civil Engineering (PHM212s) Lec Hall 3" },
+          { day: "Sunday", startTime: "08:00", endTime: "09:50", name: "Introduction to Plane Surveying", type: "Tut & Lab", room: "711B", category: "survey", raw: "Introduction to Plane Surveying (CEP211s) Tut & Lab 711B" },
+          { day: "Sunday", startTime: "10:00", endTime: "11:50", name: "Hydraulics", type: "Lec", room: "Hall 2", category: "hydro", raw: "Hydraulics (CEI212s) Lec Hall 2" },
+          { day: "Sunday", startTime: "12:30", endTime: "14:20", name: "Structural Mechanics (2)", type: "Lec", room: "331", category: "struct", raw: "Structural Mechanics (2) (CES212s) Lec 331" },
+          { day: "Sunday", startTime: "16:30", endTime: "18:20", name: "Fluid Mechanics", type: "Tut", room: "328", category: "fluid", raw: "Fluid Mechanics (CEI211s) Tut 328" },
+          { day: "Monday", startTime: "08:00", endTime: "08:50", name: "Differential Equations for Civil Engineering", type: "Tut (Biweekly)", room: "202C", category: "math", raw: "Differential Equations for Civil Engineering (PHM212s) Tut Biweekly 202C" },
+          { day: "Monday", startTime: "10:00", endTime: "11:50", name: "Engineering Hydrology", type: "Tut (Biweekly)", room: "202C", category: "hydro", raw: "Engineering Hydrology (CEI241s) Tut Biweekly 202C" },
+          { day: "Monday", startTime: "12:30", endTime: "15:20", name: "Structural Mechanics (1)", type: "Lec", room: "Hall D", category: "struct", raw: "Structural Mechanics (1) (CES211s) Lec Hall D" },
+          { day: "Monday", startTime: "18:30", endTime: "19:20", name: "Structural Mechanics (2)", type: "Tut", room: "Hall D", category: "struct", raw: "Structural Mechanics (2) (CES212s) Tut Hall D" },
+          { day: "Tuesday", startTime: "08:00", endTime: "09:50", name: "Engineering Hydrology", type: "Lec", room: "Hall 2", category: "hydro", raw: "Engineering Hydrology (CEI241s) Lec Hall 2" },
+          { day: "Tuesday", startTime: "12:30", endTime: "15:20", name: "Fluid Mechanics", type: "Lec", room: "Hall 3", category: "fluid", raw: "Fluid Mechanics (CEI211s) Lec Hall 3" },
+          { day: "Thursday", startTime: "08:00", endTime: "09:50", name: "Civil Drawing", type: "Lec (Biweekly)", room: "Hall 1", category: "drawing", raw: "Civil Drawing (CEI231s) Lec Biweekly Hall 1" },
+          { day: "Thursday", startTime: "10:00", endTime: "11:50", name: "Structures and Properties of Construction Materials", type: "Lec", room: "Hall 1", category: "materials", raw: "Structures and Properties of Construction Materials (CES251s) Lec Hall 1" },
+          { day: "Thursday", startTime: "12:30", endTime: "14:20", name: "Structural Mechanics (1)", type: "Tut", room: "711A", category: "struct", raw: "Structural Mechanics (1) (CES211s) Tut 711A" },
+          { day: "Thursday", startTime: "14:30", endTime: "16:20", name: "Civil Drawing", type: "Tut", room: "711A", category: "drawing", raw: "Civil Drawing (CEI231s) Tut 711A" },
+          { day: "Thursday", startTime: "17:30", endTime: "19:20", name: "Structures and Properties of Construction Materials", type: "Tut (Biweekly)", room: "260C", category: "materials", raw: "Structures and Properties of Construction Materials (CES251s) Tut Biweekly 260C" },
+        ],
+        "1-CEP": [
+          { day: "Saturday", startTime: "08:00", endTime: "09:50", name: "Introduction to Plane Surveying", type: "Lab", room: "Offline", category: "survey", raw: "Introduction to Plane Surveying (CEP211s) Lab Offline" },
+          { day: "Saturday", startTime: "10:00", endTime: "11:50", name: "Introduction to Plane Surveying", type: "Lab", room: "Offline", category: "survey", raw: "Introduction to Plane Surveying (CEP211s) Lab Offline" },
+          { day: "Saturday", startTime: "12:30", endTime: "14:20", name: "Fluid Mechanics", type: "Lab (Biweekly)", room: "255", category: "fluid", raw: "Fluid Mechanics (CEI211s) Lab Biweekly 255" },
+          { day: "Saturday", startTime: "14:30", endTime: "16:20", name: "Introduction to Plane Surveying", type: "Lec", room: "Hall 2", category: "survey", raw: "Introduction to Plane Surveying (CEP211s) Lec Hall 2" },
+          { day: "Saturday", startTime: "16:30", endTime: "18:20", name: "Differential Equations for Civil Engineering", type: "Lec", room: "Hall 3", category: "math", raw: "Differential Equations for Civil Engineering (PHM212s) Lec Hall 3" },
+          { day: "Sunday", startTime: "10:00", endTime: "11:50", name: "Hydraulics", type: "Lec", room: "Hall 2", category: "hydro", raw: "Hydraulics (CEI212s) Lec Hall 2" },
+          { day: "Sunday", startTime: "16:30", endTime: "18:20", name: "Fluid Mechanics", type: "Tut", room: "331", category: "fluid", raw: "Fluid Mechanics (CEI211s) Tut 331" },
+          { day: "Monday", startTime: "08:00", endTime: "08:50", name: "Differential Equations for Civil Engineering", type: "Tut (Biweekly)", room: "202C", category: "math", raw: "Differential Equations for Civil Engineering (PHM212s) Tut Biweekly 202C" },
+          { day: "Monday", startTime: "12:30", endTime: "15:20", name: "Structural Mechanics (1)", type: "Lec", room: "Hall D", category: "struct", raw: "Structural Mechanics (1) (CES211s) Lec Hall D" },
+          { day: "Tuesday", startTime: "08:00", endTime: "09:50", name: "Engineering Hydrology", type: "Lec", room: "Hall 2", category: "hydro", raw: "Engineering Hydrology (CEI241s) Lec Hall 2" },
+          { day: "Tuesday", startTime: "12:30", endTime: "15:20", name: "Fluid Mechanics", type: "Lec", room: "Hall 3", category: "fluid", raw: "Fluid Mechanics (CEI211s) Lec Hall 3" },
+          { day: "Thursday", startTime: "08:00", endTime: "09:50", name: "Civil Drawing", type: "Lec (Biweekly)", room: "Hall 1", category: "drawing", raw: "Civil Drawing (CEI231s) Lec Biweekly Hall 1" },
+          { day: "Thursday", startTime: "10:00", endTime: "11:50", name: "Structures and Properties of Construction Materials", type: "Lec", room: "Hall 1", category: "materials", raw: "Structures and Properties of Construction Materials (CES251s) Lec Hall 1" },
+          { day: "Thursday", startTime: "12:30", endTime: "14:20", name: "Civil Drawing", type: "Tut", room: "711B", category: "drawing", raw: "Civil Drawing (CEI231s) Tut 711B" },
+          { day: "Thursday", startTime: "15:30", endTime: "16:20", name: "Structural Mechanics (1)", type: "Tut", room: "711B", category: "struct", raw: "Structural Mechanics (1) (CES211s) Tut 711B" },
+          { day: "Thursday", startTime: "17:30", endTime: "19:20", name: "Structures and Properties of Construction Materials", type: "Tut (Biweekly)", room: "260C", category: "materials", raw: "Structures and Properties of Construction Materials (CES251s) Tut Biweekly 260C" },
+        ],
+        "1-CEI": [
+          { day: "Saturday", startTime: "10:00", endTime: "11:50", name: "Fluid Mechanics", type: "Lab (Biweekly)", room: "255", category: "fluid", raw: "Fluid Mechanics (CEI211s) Lab Biweekly 255" },
+          { day: "Saturday", startTime: "14:30", endTime: "16:20", name: "Introduction to Plane Surveying", type: "Lec", room: "Hall 2", category: "survey", raw: "Introduction to Plane Surveying (CEP211s) Lec Hall 2" },
+          { day: "Saturday", startTime: "16:30", endTime: "18:20", name: "Differential Equations for Civil Engineering", type: "Lec", room: "Hall 3", category: "math", raw: "Differential Equations for Civil Engineering (PHM212s) Lec Hall 3" },
+          { day: "Sunday", startTime: "10:00", endTime: "11:50", name: "Hydraulics", type: "Lec", room: "Hall 2", category: "hydro", raw: "Hydraulics (CEI212s) Lec Hall 2" },
+          { day: "Sunday", startTime: "12:30", endTime: "14:20", name: "Introduction to Plane Surveying", type: "Tut & Lab", room: "Offline", category: "survey", raw: "Introduction to Plane Surveying (CEP211s) Tut & Lab Offline" },
+          { day: "Sunday", startTime: "14:30", endTime: "15:20", name: "Fluid Mechanics", type: "Tut", room: "304C", category: "fluid", raw: "Fluid Mechanics (CEI211s) Tut 304C" },
+          { day: "Monday", startTime: "08:00", endTime: "08:50", name: "Differential Equations for Civil Engineering", type: "Tut (Biweekly)", room: "202C", category: "math", raw: "Differential Equations for Civil Engineering (PHM212s) Tut Biweekly 202C" },
+          { day: "Monday", startTime: "12:30", endTime: "15:20", name: "Structural Mechanics (1)", type: "Lec", room: "Hall D", category: "struct", raw: "Structural Mechanics (1) (CES211s) Lec Hall D" },
+          { day: "Tuesday", startTime: "08:00", endTime: "09:50", name: "Engineering Hydrology", type: "Lec", room: "Hall 2", category: "hydro", raw: "Engineering Hydrology (CEI241s) Lec Hall 2" },
+          { day: "Tuesday", startTime: "10:00", endTime: "11:50", name: "Engineering Hydrology", type: "Tut (Biweekly)", room: "344", category: "hydro", raw: "Engineering Hydrology (CEI241s) Tut Biweekly 344" },
+          { day: "Tuesday", startTime: "12:30", endTime: "15:20", name: "Fluid Mechanics", type: "Lec", room: "Hall 3", category: "fluid", raw: "Fluid Mechanics (CEI211s) Lec Hall 3" },
+          { day: "Thursday", startTime: "08:00", endTime: "09:50", name: "Civil Drawing", type: "Lec (Biweekly)", room: "Hall 1", category: "drawing", raw: "Civil Drawing (CEI231s) Lec Biweekly Hall 1" },
+          { day: "Thursday", startTime: "10:00", endTime: "11:50", name: "Structures and Properties of Construction Materials", type: "Lec", room: "Hall 1", category: "materials", raw: "Structures and Properties of Construction Materials (CES251s) Lec Hall 1" },
+          { day: "Thursday", startTime: "12:30", endTime: "14:20", name: "Structural Mechanics (1)", type: "Tut", room: "701A", category: "struct", raw: "Structural Mechanics (1) (CES211s) Tut 701A" },
+          { day: "Thursday", startTime: "14:30", endTime: "15:20", name: "Civil Drawing", type: "Tut", room: "257", category: "drawing", raw: "Civil Drawing (CEI231s) Tut 257" },
+          { day: "Thursday", startTime: "17:30", endTime: "19:20", name: "Structures and Properties of Construction Materials", type: "Tut (Biweekly)", room: "260C", category: "materials", raw: "Structures and Properties of Construction Materials (CES251s) Tut Biweekly 260C" },
+        ]
+      }
     };
 
     function getTimeRange(c) {
@@ -302,12 +311,10 @@
       })[cat] || '#F5B642';
     }
 
-
-    // ========== Cairo time helpers (Africa/Cairo) ==========
+    // ========== Cairo time (Africa/Cairo) ==========
     const CAIRO_TZ = 'Africa/Cairo';
 
     function getCairoNow() {
-      const d = new Date();
       const parts = new Intl.DateTimeFormat('en-GB', {
         timeZone: CAIRO_TZ,
         weekday: 'long',
@@ -318,10 +325,9 @@
         minute: '2-digit',
         second: '2-digit',
         hour12: false
-      }).formatToParts(d);
+      }).formatToParts(new Date());
       const map = {};
       parts.forEach(p => { if (p.type !== 'literal') map[p.type] = p.value; });
-      // hour12:false still can give 24 as 00 in some engines; normalize
       let hour = parseInt(map.hour, 10);
       if (hour === 24) hour = 0;
       const minute = parseInt(map.minute, 10);
@@ -331,12 +337,10 @@
         year: map.year,
         month: map.month,
         day: map.day,
-        hour,
-        minute,
-        second,
+        hour, minute, second,
         minutesOfDay: hour * 60 + minute,
         timeStr: `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`,
-        dateStr: `${map.weekday}, ${map.day} ${map.month} ${map.year}`
+        dateStr: `${map.day} ${map.month} ${map.year}`
       };
     }
 
@@ -347,23 +351,21 @@
     }
 
     function isCourseLive(course, cairo) {
-      if (!cairo || course.day !== cairo.weekday) return false;
+      if (!cairo || !course || course.day !== cairo.weekday) return false;
       const start = parseTimeToMinutes(course.startTime);
       const end = parseTimeToMinutes(course.endTime);
       return cairo.minutesOfDay >= start && cairo.minutesOfDay < end;
     }
 
-    function useCairoClock(intervalMs = 15000) {
+    function useCairoClock(intervalMs = 1000) {
       const [cairo, setCairo] = useState(() => getCairoNow());
       useEffect(() => {
-        setCairo(getCairoNow());
         const id = setInterval(() => setCairo(getCairoNow()), intervalMs);
         return () => clearInterval(id);
       }, [intervalMs]);
       return cairo;
     }
 
-    // Subtle optional sounds
     function playClick() {
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -391,7 +393,6 @@
       } catch (_) {}
     }
 
-    // Dust particles
     function DustParticles({ active }) {
       const particles = useMemo(() => Array.from({ length: 22 }, (_, i) => ({
         id: i, left: Math.random() * 100, top: Math.random() * 100,
@@ -410,7 +411,6 @@
       );
     }
 
-    // Pull Cord
     function PullCord({ onActivate, reducedMotion }) {
       const [pullY, setPullY] = useState(0);
       const [pulling, setPulling] = useState(false);
@@ -460,26 +460,16 @@
 
       return (
         <div className="relative flex flex-col items-center select-none" style={{ touchAction: 'none' }}>
-          {/* Ceiling fixture */}
           <div className="w-20 h-3.5 rounded-sm bg-gradient-to-b from-gray-600 to-gray-900 shadow-lg" />
           <div className="w-1 h-7 bg-gradient-to-b from-gray-500 to-gray-800" />
-
-          {/* Bulb */}
-          <div
-            className={`relative w-[4.25rem] h-[5.25rem] rounded-full bulb-glass ${activated ? 'bulb-on' : 'swing'}`}
-            style={{ transformOrigin: 'top center' }}
-          >
+          <div className={`relative w-[4.25rem] h-[5.25rem] rounded-full bulb-glass ${activated ? 'bulb-on' : 'swing'}`} style={{ transformOrigin: 'top center' }}>
             {!activated && (
               <div className="absolute inset-0 flex items-center justify-center opacity-30">
                 <div className="w-3.5 h-5 border border-gray-500 rounded-sm" />
               </div>
             )}
           </div>
-
-          {/* Socket */}
           <div className="w-7 h-3.5 -mt-0.5 rounded-b-md bg-gradient-to-b from-gray-600 to-gray-900 z-10" />
-
-          {/* Cord + handle */}
           <div
             className="relative flex flex-col items-center cursor-grab active:cursor-grabbing outline-none"
             style={{
@@ -500,15 +490,11 @@
             role="button"
             aria-label="Pull the cord to turn on the light and reveal your schedule"
           >
-            <div
-              className="cord w-[2px]"
-              style={{ height: `${100 + pullY * 0.35}px` }}
-            />
+            <div className="cord w-[2px]" style={{ height: `${100 + pullY * 0.35}px` }} />
             <div className="cord-handle w-5 h-9 rounded-full flex items-center justify-center">
               <div className="w-1.5 h-1.5 rounded-full bg-gray-500" />
             </div>
           </div>
-
           {!activated && (
             <>
               <p className="mt-7 text-sm text-warmwhite/55 tracking-wide font-light instruction-pulse">
@@ -527,19 +513,15 @@
       );
     }
 
-    // Course Card
+    // Course Card — never hides on live updates (no opacity:0 on re-render)
     function CourseCard({ course, index, isLive }) {
       const [expanded, setExpanded] = useState(false);
       const color = getCategoryColor(course.category);
 
       return (
         <div
-          className={`course-card relative rounded-xl bg-charcoal/85 backdrop-blur-sm border border-white/[0.06] p-3.5 md:p-4 cursor-pointer ${getCategoryClass(course.category)} fade-in-up ${isLive ? 'course-card-live' : ''}`}
-          style={{
-            borderLeftColor: isLive ? '#FFD166' : color,
-            animationDelay: `${0.08 * index}s`,
-            opacity: 0
-          }}
+          className={`course-card relative rounded-xl bg-charcoal/85 backdrop-blur-sm border border-white/[0.06] p-3.5 md:p-4 cursor-pointer ${getCategoryClass(course.category)} ${isLive ? 'course-card-live' : ''}`}
+          style={{ borderLeftColor: isLive ? '#FFD166' : color }}
           onClick={() => setExpanded(!expanded)}
         >
           <div className="flex items-start justify-between gap-2">
@@ -547,7 +529,7 @@
               {course.name}
             </h3>
             {isLive && (
-              <span className="live-badge shrink-0 mt-0.5">
+              <span className="live-badge shrink-0 mt-0.5" aria-label="Currently in progress">
                 <span className="live-dot" />
                 Live
               </span>
@@ -584,10 +566,9 @@
       );
     }
 
-    // Header
-    function Header() {
+    function Header({ section, onSectionChange }) {
       return (
-        <header className="text-center py-8 md:py-12 px-4 relative z-20 fade-in-up" style={{ animationDelay: '0.15s', opacity: 0 }}>
+        <header className="text-center py-8 md:py-12 px-4 relative z-20 fade-in-up">
           <p className="text-goldenamber/75 text-[11px] md:text-xs tracking-[0.28em] uppercase font-medium mb-2.5">
             Ain Shams University — Faculty of Engineering
           </p>
@@ -595,31 +576,45 @@
             Civil Engineering
           </h1>
           <p className="mt-2 text-lg md:text-xl text-warmyellow/90 font-medium tracking-wide">
-            Sophomore — Section 1
+            Sophomore — {section}
           </p>
           <div className="mt-3.5 flex justify-center gap-2 text-[11px] text-warmwhite/35">
             <span>Academic Year 2025-2026</span>
             <span aria-hidden="true">·</span>
-            <span>Structural Engineering</span>
+            <span>General Civil Engineering</span>
+          </div>
+          <div className="mt-6 flex flex-wrap justify-center gap-2 px-2">
+            {SCHEDULE_DATA.sectionOrder.map((s) => (
+              <button
+                key={s}
+                onClick={() => onSectionChange(s)}
+                className={`px-4 py-2 rounded-full text-xs md:text-sm font-medium transition-all duration-300 ${
+                  section === s
+                    ? 'bg-goldenamber/20 text-goldenamber border border-goldenamber/40 shadow-[0_0_16px_rgba(245,182,66,0.15)]'
+                    : 'bg-white/[0.04] text-warmwhite/45 border border-white/[0.08] hover:text-warmwhite/70 hover:border-white/15'
+                }`}
+                aria-pressed={section === s}
+              >
+                {s}
+              </button>
+            ))}
           </div>
         </header>
       );
     }
 
-    // Desktop / large layout
-    function DesktopSchedule({ cairo }) {
+    function DesktopSchedule({ courses, cairo }) {
       return (
         <div className="hidden lg:block px-6 pb-10 max-w-5xl mx-auto">
           <div className="space-y-5">
-            {SCHEDULE_DATA.days.map((day, dayIdx) => {
-              const dayCourses = SCHEDULE_DATA.courses.filter(c => c.day === day);
+            {SCHEDULE_DATA.days.map((day) => {
+              const dayCourses = courses.filter(c => c.day === day);
               if (dayCourses.length === 0) return null;
               const isToday = cairo && day === cairo.weekday;
               return (
                 <section
                   key={day}
-                  className={`rounded-2xl bg-charcoal/40 border border-white/[0.04] p-5 fade-in-up ${isToday ? 'day-section-today' : ''}`}
-                  style={{ animationDelay: `${0.25 + dayIdx * 0.08}s`, opacity: 0 }}
+                  className={`rounded-2xl bg-charcoal/40 border border-white/[0.04] p-5 ${isToday ? 'day-section-today' : ''}`}
                 >
                   <h2 className={`text-goldenamber font-semibold text-sm tracking-wider mb-4 uppercase ${isToday ? 'day-title-today' : ''}`}>
                     {day}
@@ -628,7 +623,7 @@
                   <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3.5">
                     {dayCourses.map((course, i) => (
                       <CourseCard
-                        key={`${day}-${i}`}
+                        key={`${day}-${course.name}-${course.startTime}-${i}`}
                         course={course}
                         index={i}
                         isLive={isCourseLive(course, cairo)}
@@ -643,19 +638,17 @@
       );
     }
 
-    // Mobile layout
-    function MobileSchedule({ cairo }) {
+    function MobileSchedule({ courses, cairo }) {
       return (
         <div className="lg:hidden px-4 pb-10 space-y-7">
-          {SCHEDULE_DATA.days.map((day, dayIdx) => {
-            const dayCourses = SCHEDULE_DATA.courses.filter(c => c.day === day);
+          {SCHEDULE_DATA.days.map((day) => {
+            const dayCourses = courses.filter(c => c.day === day);
             if (dayCourses.length === 0) return null;
             const isToday = cairo && day === cairo.weekday;
             return (
               <section
                 key={day}
-                className={`fade-in-up ${isToday ? 'rounded-2xl border border-white/[0.04] p-4 day-section-today' : ''}`}
-                style={{ animationDelay: `${0.22 + dayIdx * 0.07}s`, opacity: 0 }}
+                className={isToday ? 'rounded-2xl border border-white/[0.04] p-4 day-section-today' : ''}
               >
                 <h2 className={`text-goldenamber font-semibold text-base tracking-wide mb-3.5 pb-2 border-b border-goldenamber/15 ${isToday ? 'day-title-today border-goldenamber/30' : ''}`}>
                   {day}
@@ -664,7 +657,7 @@
                 <div className="space-y-3">
                   {dayCourses.map((course, i) => (
                     <CourseCard
-                      key={`${day}-${i}`}
+                      key={`${day}-${course.name}-${course.startTime}-${i}`}
                       course={course}
                       index={i}
                       isLive={isCourseLive(course, cairo)}
@@ -678,46 +671,42 @@
       );
     }
 
-    // Footer
-    function Footer() {
+    function Footer({ section }) {
       return (
-        <footer className="relative z-20 py-11 px-4 text-center border-t border-white/[0.04] mt-6 fade-in-up" style={{ animationDelay: '0.9s', opacity: 0 }}>
+        <footer className="relative z-20 py-11 px-4 text-center border-t border-white/[0.04] mt-6">
           <div className="max-w-md mx-auto">
             <div className="h-px w-14 bg-gradient-to-r from-transparent via-goldenamber/40 to-transparent mx-auto mb-6" />
             <p className="text-warmwhite/80 text-sm font-medium tracking-wide">
               Designed & Developed by Abdelrahman Ashraf
             </p>
             <p className="text-warmwhite/35 text-xs mt-1.5 tracking-wider">
-              2401727 — Civil Engineering Student — Ain Shams University
+              2401727 — Civil Engineering — Ain Shams University
             </p>
             <p className="mt-4 text-[10px] tracking-[0.35em] text-goldenamber/30">
-              CIVIL ENGINEERING // SOPHOMORE // SECTION 01
+              CIVIL ENGINEERING // SOPHOMORE // {section}
             </p>
           </div>
         </footer>
       );
     }
 
-    // Nav + Live Clock (Cairo)
     function Nav({ lightOn, onToggle, cairo }) {
       return (
         <nav className="fixed top-0 inset-x-0 z-50 flex justify-between items-center px-4 md:px-8 py-3.5 bg-gradient-to-b from-nearblack/95 to-transparent backdrop-blur-[2px]">
-          <span className="text-[11px] md:text-xs text-warmwhite/40 font-medium tracking-[0.2em] uppercase">
+          <span className="text-[11px] md:text-xs text-warmwhite/40 font-medium tracking-[0.2em] uppercase shrink-0">
             ASU · Eng
           </span>
-
           {cairo && (
-            <div className="live-clock flex flex-col items-center leading-tight select-none" title="Cairo time (Africa/Cairo)">
+            <div className="live-clock flex flex-col items-center leading-tight select-none px-2" title="Cairo time (Africa/Cairo)">
               <span className="live-clock-time text-sm md:text-base font-manrope tracking-wider">
                 {cairo.timeStr}
               </span>
-              <span className="text-[9px] md:text-[10px] text-warmwhite/40 tracking-wide mt-0.5">
+              <span className="text-[9px] md:text-[10px] text-warmwhite/40 tracking-wide mt-0.5 whitespace-nowrap">
                 {cairo.day} {cairo.month} · {cairo.weekday.slice(0, 3)}
               </span>
             </div>
           )}
-
-          <div className="flex gap-4 md:gap-5 text-[12px] md:text-sm items-center">
+          <div className="flex gap-4 md:gap-5 text-[12px] md:text-sm items-center shrink-0">
             <a href="#schedule" className="text-warmwhite/55 hover:text-goldenamber transition-colors">Schedule</a>
             <button onClick={onToggle} className="text-warmwhite/55 hover:text-goldenamber transition-colors" aria-label="Toggle lighting">
               {lightOn ? 'Dim' : 'Light'}
@@ -727,12 +716,13 @@
       );
     }
 
-    // App
     function App() {
       const [phase, setPhase] = useState('loading');
       const [lightOn, setLightOn] = useState(false);
       const [reducedMotion, setReducedMotion] = useState(false);
+      const [section, setSection] = useState('1-CES');
       const cairo = useCairoClock(1000);
+      const courses = SCHEDULE_DATA.sections[section] || [];
 
       useEffect(() => {
         const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -779,15 +769,12 @@
               }}
             />
           )}
-
           {lightOn && <div className="fixed inset-0 blueprint-bg opacity-[0.35] pointer-events-none z-0" />}
-
           {lightOn && (
             <div className="fixed bottom-16 right-3 md:right-8 pointer-events-none z-0 opacity-[0.035] select-none">
               <p className="text-7xl md:text-8xl font-bold tracking-tighter text-warmwhite">CIVIL</p>
             </div>
           )}
-
           <DustParticles active={lightOn} />
 
           {phase === 'loading' && (
@@ -800,23 +787,20 @@
           {phase !== 'loading' && (
             <>
               <Nav lightOn={lightOn} onToggle={toggleLight} cairo={cairo} />
-
               {!lightOn && (
                 <div className="fixed inset-0 z-30 flex flex-col items-center justify-center">
                   <PullCord onActivate={handleActivate} reducedMotion={reducedMotion} />
                 </div>
               )}
-
               {phase === 'activating' && (
                 <div className="fixed inset-0 z-40 pointer-events-none bg-black flicker" />
               )}
-
               {lightOn && (
                 <main id="schedule" className="relative z-20 pt-16 reveal-light">
-                  <Header />
-                  <DesktopSchedule cairo={cairo} />
-                  <MobileSchedule cairo={cairo} />
-                  <Footer />
+                  <Header section={section} onSectionChange={setSection} />
+                  <DesktopSchedule courses={courses} cairo={cairo} />
+                  <MobileSchedule courses={courses} cairo={cairo} />
+                  <Footer section={section} />
                 </main>
               )}
             </>
