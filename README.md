@@ -8,7 +8,7 @@
 
 ## Live Demo
 
-*(أضف لينك GitHub Pages هنا بعد الرفع)*
+*(https://abdelrahman7667.github.io/Civil-Engineering-Study-Schedule/)*
 
 ---
 
@@ -64,23 +64,7 @@
 
 ---
 
-## طريقة التشغيل
-
-1. حمّل ملف `index.html`
-2. افتحه في أي متصفح حديث (Chrome / Edge / Firefox / Safari)
-3. اسحب الحبل أو اضغط **Turn On Light**
-4. اختر القسم من الأزرار أعلى الصفحة
-
-لا يحتاج سيرفر ولا تثبيت.
-
-### النشر على GitHub Pages
-
-1. أنشئ Repository جديد
-2. ارفع `index.html` (و`README.md` اختياري)
-3. من Settings → Pages → Source: Deploy from branch `main`
-4. افتح اللينك الظاهر
-
----
+##=
 
 ## التقنيات
 
@@ -101,9 +85,3 @@ Ain Shams University — Faculty of Engineering
 
 ---
 
-## ملاحظات
-
-- بعض الحصص **Biweekly** (كل أسبوعين)
-- الجداول مبنية على الصفحة الأولى من الجدول الرسمي لسوفومور Group 1
-- الساعة والمحاضرة الحالية تعتمد على توقيت القاهرة وليس جهاز المستخدم
-'''
