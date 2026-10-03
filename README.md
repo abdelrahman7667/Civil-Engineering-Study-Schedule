@@ -2,7 +2,7 @@
 
 **Ain Shams University — Faculty of Engineering**  
 **Academic Year 2025–2026**  
-**Civil Engineering — Sophomore (Group 1)**
+**Civil Engineering — Sophomore**
 
 ---
 
