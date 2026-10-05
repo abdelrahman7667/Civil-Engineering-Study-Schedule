@@ -167,13 +167,8 @@
       z-index: 5;
     }
 
-    /* Live clock */
     .live-clock { font-variant-numeric: tabular-nums; letter-spacing: 0.04em; }
-    .live-clock-time {
-      color: #FFD166; font-weight: 600;
-      text-shadow: 0 0 12px rgba(245, 182, 66, 0.25);
-    }
-    /* Active course — highlight only, never hide */
+    .live-clock-time { color: #FFD166; font-weight: 600; text-shadow: 0 0 12px rgba(245, 182, 66, 0.25); }
     .course-card-live {
       border-color: rgba(245, 182, 66, 0.4) !important;
       background: linear-gradient(135deg, rgba(245, 182, 66, 0.1), rgba(17, 17, 17, 0.92)) !important;
@@ -191,9 +186,7 @@
       width: 5px; height: 5px; border-radius: 50%; background: #050505;
       animation: live-dot-pulse 1.2s ease-in-out infinite;
     }
-    @keyframes live-dot-pulse {
-      0%, 100% { opacity: 1; } 50% { opacity: 0.4; }
-    }
+    @keyframes live-dot-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
     .day-section-today {
       border-color: rgba(245, 182, 66, 0.22) !important;
       background: rgba(245, 182, 66, 0.04) !important;
@@ -206,24 +199,21 @@
       border: 1px solid rgba(245, 182, 66, 0.28);
       padding: 2px 7px; border-radius: 999px;
     }
-    @media (prefers-reduced-motion: reduce) {
-      .live-dot { animation: none !important; }
-    }
+    @media (prefers-reduced-motion: reduce) { .live-dot { animation: none !important; } }
+
   </style>
 </head>
+
 <body class="vignette">
   <div id="root"></div>
-
   <script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone@7.26.5/babel.min.js"></script>
-
-  
   <script type="text/babel" data-presets="react">
     const { useState, useEffect, useRef, useCallback, useMemo } = React;
 
-    // ========== SCHEDULE DATA — UG23SPCEG Sophomore Group 1 (260925E) ==========
-    // Departments: 1-CES | 1-CEP | 1-CEI — full names from official timetable page 1
+    // Page 1 latest timetable — 1-CES | 1-CEP | 1-CEI
+    // NOTE: Monday PHM212s Tut 08:00–08:50 removed (incorrect for these sections)
     const SCHEDULE_DATA = {
       academicYear: "2025-2026",
       department: "Civil Engineering Department",
@@ -240,7 +230,6 @@
           { day: "Sunday", startTime: "10:00", endTime: "11:50", name: "Hydraulics", type: "Lec", room: "Hall 2", category: "hydro", raw: "Hydraulics (CEI212s) Lec Hall 2" },
           { day: "Sunday", startTime: "12:30", endTime: "14:20", name: "Structural Mechanics (2)", type: "Lec", room: "331", category: "struct", raw: "Structural Mechanics (2) (CES212s) Lec 331" },
           { day: "Sunday", startTime: "16:30", endTime: "18:20", name: "Fluid Mechanics", type: "Tut", room: "328", category: "fluid", raw: "Fluid Mechanics (CEI211s) Tut 328" },
-          { day: "Monday", startTime: "08:00", endTime: "08:50", name: "Differential Equations for Civil Engineering", type: "Tut (Biweekly)", room: "202C", category: "math", raw: "Differential Equations for Civil Engineering (PHM212s) Tut Biweekly 202C" },
           { day: "Monday", startTime: "10:00", endTime: "11:50", name: "Engineering Hydrology", type: "Tut (Biweekly)", room: "202C", category: "hydro", raw: "Engineering Hydrology (CEI241s) Tut Biweekly 202C" },
           { day: "Monday", startTime: "12:30", endTime: "15:20", name: "Structural Mechanics (1)", type: "Lec", room: "Hall D", category: "struct", raw: "Structural Mechanics (1) (CES211s) Lec Hall D" },
           { day: "Monday", startTime: "18:30", endTime: "19:20", name: "Structural Mechanics (2)", type: "Tut", room: "Hall D", category: "struct", raw: "Structural Mechanics (2) (CES212s) Tut Hall D" },
@@ -260,8 +249,8 @@
           { day: "Saturday", startTime: "16:30", endTime: "18:20", name: "Differential Equations for Civil Engineering", type: "Lec", room: "Hall 3", category: "math", raw: "Differential Equations for Civil Engineering (PHM212s) Lec Hall 3" },
           { day: "Sunday", startTime: "10:00", endTime: "11:50", name: "Hydraulics", type: "Lec", room: "Hall 2", category: "hydro", raw: "Hydraulics (CEI212s) Lec Hall 2" },
           { day: "Sunday", startTime: "16:30", endTime: "18:20", name: "Fluid Mechanics", type: "Tut", room: "331", category: "fluid", raw: "Fluid Mechanics (CEI211s) Tut 331" },
-          { day: "Monday", startTime: "08:00", endTime: "08:50", name: "Differential Equations for Civil Engineering", type: "Tut (Biweekly)", room: "202C", category: "math", raw: "Differential Equations for Civil Engineering (PHM212s) Tut Biweekly 202C" },
           { day: "Monday", startTime: "12:30", endTime: "15:20", name: "Structural Mechanics (1)", type: "Lec", room: "Hall D", category: "struct", raw: "Structural Mechanics (1) (CES211s) Lec Hall D" },
+          { day: "Monday", startTime: "18:30", endTime: "19:20", name: "Structural Mechanics (2)", type: "Tut", room: "Hall D", category: "struct", raw: "Structural Mechanics (2) (CES212s) Tut Hall D" },
           { day: "Tuesday", startTime: "08:00", endTime: "09:50", name: "Engineering Hydrology", type: "Lec", room: "Hall 2", category: "hydro", raw: "Engineering Hydrology (CEI241s) Lec Hall 2" },
           { day: "Tuesday", startTime: "12:30", endTime: "15:20", name: "Fluid Mechanics", type: "Lec", room: "Hall 3", category: "fluid", raw: "Fluid Mechanics (CEI211s) Lec Hall 3" },
           { day: "Thursday", startTime: "08:00", endTime: "09:50", name: "Civil Drawing", type: "Lec (Biweekly)", room: "Hall 1", category: "drawing", raw: "Civil Drawing (CEI231s) Lec Biweekly Hall 1" },
@@ -277,8 +266,8 @@
           { day: "Sunday", startTime: "10:00", endTime: "11:50", name: "Hydraulics", type: "Lec", room: "Hall 2", category: "hydro", raw: "Hydraulics (CEI212s) Lec Hall 2" },
           { day: "Sunday", startTime: "12:30", endTime: "14:20", name: "Introduction to Plane Surveying", type: "Tut & Lab", room: "Offline", category: "survey", raw: "Introduction to Plane Surveying (CEP211s) Tut & Lab Offline" },
           { day: "Sunday", startTime: "14:30", endTime: "15:20", name: "Fluid Mechanics", type: "Tut", room: "304C", category: "fluid", raw: "Fluid Mechanics (CEI211s) Tut 304C" },
-          { day: "Monday", startTime: "08:00", endTime: "08:50", name: "Differential Equations for Civil Engineering", type: "Tut (Biweekly)", room: "202C", category: "math", raw: "Differential Equations for Civil Engineering (PHM212s) Tut Biweekly 202C" },
           { day: "Monday", startTime: "12:30", endTime: "15:20", name: "Structural Mechanics (1)", type: "Lec", room: "Hall D", category: "struct", raw: "Structural Mechanics (1) (CES211s) Lec Hall D" },
+          { day: "Monday", startTime: "18:30", endTime: "19:20", name: "Structural Mechanics (2)", type: "Tut", room: "Hall D", category: "struct", raw: "Structural Mechanics (2) (CES212s) Tut Hall D" },
           { day: "Tuesday", startTime: "08:00", endTime: "09:50", name: "Engineering Hydrology", type: "Lec", room: "Hall 2", category: "hydro", raw: "Engineering Hydrology (CEI241s) Lec Hall 2" },
           { day: "Tuesday", startTime: "10:00", endTime: "11:50", name: "Engineering Hydrology", type: "Tut (Biweekly)", room: "344", category: "hydro", raw: "Engineering Hydrology (CEI241s) Tut Biweekly 344" },
           { day: "Tuesday", startTime: "12:30", endTime: "15:20", name: "Fluid Mechanics", type: "Lec", room: "Hall 3", category: "fluid", raw: "Fluid Mechanics (CEI211s) Lec Hall 3" },
@@ -291,86 +280,52 @@
       }
     };
 
-    function getTimeRange(c) {
-      return `${c.startTime} — ${c.endTime}`;
-    }
-
+    function getTimeRange(c) { return `${c.startTime} — ${c.endTime}`; }
     function getCategoryClass(cat) {
-      return ({
-        struct: 'card-struct', materials: 'card-materials', lab: 'card-lab',
-        math: 'card-math', survey: 'card-survey', hydro: 'card-hydro',
-        fluid: 'card-fluid', drawing: 'card-drawing'
-      })[cat] || 'card-struct';
+      return ({ struct:'card-struct', materials:'card-materials', lab:'card-lab', math:'card-math', survey:'card-survey', hydro:'card-hydro', fluid:'card-fluid', drawing:'card-drawing' })[cat] || 'card-struct';
     }
-
     function getCategoryColor(cat) {
-      return ({
-        struct: '#F5B642', materials: '#E8A838', lab: '#7EB8DA',
-        math: '#A78BFA', survey: '#34D399', hydro: '#60A5FA',
-        fluid: '#38BDF8', drawing: '#F472B6'
-      })[cat] || '#F5B642';
+      return ({ struct:'#F5B642', materials:'#E8A838', lab:'#7EB8DA', math:'#A78BFA', survey:'#34D399', hydro:'#60A5FA', fluid:'#38BDF8', drawing:'#F472B6' })[cat] || '#F5B642';
     }
 
-    // ========== Cairo time (Africa/Cairo) ==========
     const CAIRO_TZ = 'Africa/Cairo';
-
     function getCairoNow() {
       const parts = new Intl.DateTimeFormat('en-GB', {
-        timeZone: CAIRO_TZ,
-        weekday: 'long',
-        year: 'numeric',
-        month: 'short',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false
+        timeZone: CAIRO_TZ, weekday: 'long', year: 'numeric', month: 'short', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
       }).formatToParts(new Date());
       const map = {};
       parts.forEach(p => { if (p.type !== 'literal') map[p.type] = p.value; });
-      let hour = parseInt(map.hour, 10);
-      if (hour === 24) hour = 0;
+      let hour = parseInt(map.hour, 10); if (hour === 24) hour = 0;
       const minute = parseInt(map.minute, 10);
-      const second = parseInt(map.second, 10);
       return {
-        weekday: map.weekday,
-        year: map.year,
-        month: map.month,
-        day: map.day,
-        hour, minute, second,
-        minutesOfDay: hour * 60 + minute,
-        timeStr: `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`,
-        dateStr: `${map.day} ${map.month} ${map.year}`
+        weekday: map.weekday, year: map.year, month: map.month, day: map.day,
+        hour, minute, minutesOfDay: hour * 60 + minute,
+        timeStr: `${String(hour).padStart(2,'0')}:${String(minute).padStart(2,'0')}`
       };
     }
-
     function parseTimeToMinutes(t) {
       if (!t) return 0;
       const [h, m] = t.split(':').map(Number);
       return h * 60 + (m || 0);
     }
-
     function isCourseLive(course, cairo) {
       if (!cairo || !course || course.day !== cairo.weekday) return false;
-      const start = parseTimeToMinutes(course.startTime);
-      const end = parseTimeToMinutes(course.endTime);
-      return cairo.minutesOfDay >= start && cairo.minutesOfDay < end;
+      return cairo.minutesOfDay >= parseTimeToMinutes(course.startTime) && cairo.minutesOfDay < parseTimeToMinutes(course.endTime);
     }
-
-    function useCairoClock(intervalMs = 1000) {
+    function useCairoClock(ms = 1000) {
       const [cairo, setCairo] = useState(() => getCairoNow());
       useEffect(() => {
-        const id = setInterval(() => setCairo(getCairoNow()), intervalMs);
+        const id = setInterval(() => setCairo(getCairoNow()), ms);
         return () => clearInterval(id);
-      }, [intervalMs]);
+      }, [ms]);
       return cairo;
     }
 
     function playClick() {
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const o = ctx.createOscillator();
-        const g = ctx.createGain();
+        const o = ctx.createOscillator(), g = ctx.createGain();
         o.connect(g); g.connect(ctx.destination);
         o.frequency.value = 780; o.type = 'sine';
         g.gain.setValueAtTime(0.07, ctx.currentTime);
@@ -381,8 +336,7 @@
     function playOn() {
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const o = ctx.createOscillator();
-        const g = ctx.createGain();
+        const o = ctx.createOscillator(), g = ctx.createGain();
         o.connect(g); g.connect(ctx.destination);
         o.frequency.setValueAtTime(180, ctx.currentTime);
         o.frequency.exponentialRampToValueAtTime(380, ctx.currentTime + 0.18);
@@ -395,101 +349,55 @@
 
     function DustParticles({ active }) {
       const particles = useMemo(() => Array.from({ length: 22 }, (_, i) => ({
-        id: i, left: Math.random() * 100, top: Math.random() * 100,
-        delay: Math.random() * 6, size: 1 + Math.random() * 1.8
+        id: i, left: Math.random()*100, top: Math.random()*100, delay: Math.random()*6, size: 1+Math.random()*1.8
       })), []);
       if (!active) return null;
       return (
         <div className="fixed inset-0 pointer-events-none overflow-hidden z-10">
           {particles.map(p => (
-            <div key={p.id} className="dust" style={{
-              left: `${p.left}%`, top: `${p.top}%`,
-              width: p.size, height: p.size, animationDelay: `${p.delay}s`
-            }} />
+            <div key={p.id} className="dust" style={{ left:`${p.left}%`, top:`${p.top}%`, width:p.size, height:p.size, animationDelay:`${p.delay}s` }} />
           ))}
         </div>
       );
     }
 
-    function PullCord({ onActivate, reducedMotion }) {
+    function PullCord({ onActivate }) {
       const [pullY, setPullY] = useState(0);
       const [pulling, setPulling] = useState(false);
       const [activated, setActivated] = useState(false);
       const startY = useRef(0);
-      const THRESHOLD = 78;
-
       const doActivate = useCallback(() => {
         if (activated) return;
-        setActivated(true);
-        setPulling(false);
-        playClick();
-        setTimeout(() => playOn(), 160);
-        onActivate();
+        setActivated(true); setPulling(false);
+        playClick(); setTimeout(() => playOn(), 160); onActivate();
       }, [activated, onActivate]);
-
-      const handleStart = (clientY) => {
-        if (activated) return;
-        setPulling(true);
-        startY.current = clientY;
-      };
-
-      const handleMove = (clientY) => {
+      const handleStart = (y) => { if (!activated) { setPulling(true); startY.current = y; } };
+      const handleMove = (y) => {
         if (!pulling || activated) return;
-        const delta = Math.max(0, Math.min(150, clientY - startY.current));
-        setPullY(delta);
-        if (delta >= THRESHOLD) doActivate();
+        const d = Math.max(0, Math.min(150, y - startY.current));
+        setPullY(d); if (d >= 78) doActivate();
       };
-
-      const handleEnd = () => {
-        if (activated) return;
-        setPulling(false);
-        setPullY(0);
-      };
-
+      const handleEnd = () => { if (!activated) { setPulling(false); setPullY(0); } };
       useEffect(() => {
         if (!pulling) return;
-        const mm = (e) => handleMove(e.clientY);
-        const mu = () => handleEnd();
-        window.addEventListener('mousemove', mm);
-        window.addEventListener('mouseup', mu);
-        return () => {
-          window.removeEventListener('mousemove', mm);
-          window.removeEventListener('mouseup', mu);
-        };
+        const mm = (e) => handleMove(e.clientY), mu = () => handleEnd();
+        window.addEventListener('mousemove', mm); window.addEventListener('mouseup', mu);
+        return () => { window.removeEventListener('mousemove', mm); window.removeEventListener('mouseup', mu); };
       }, [pulling, activated]);
-
       return (
         <div className="relative flex flex-col items-center select-none" style={{ touchAction: 'none' }}>
           <div className="w-20 h-3.5 rounded-sm bg-gradient-to-b from-gray-600 to-gray-900 shadow-lg" />
           <div className="w-1 h-7 bg-gradient-to-b from-gray-500 to-gray-800" />
-          <div className={`relative w-[4.25rem] h-[5.25rem] rounded-full bulb-glass ${activated ? 'bulb-on' : 'swing'}`} style={{ transformOrigin: 'top center' }}>
-            {!activated && (
-              <div className="absolute inset-0 flex items-center justify-center opacity-30">
-                <div className="w-3.5 h-5 border border-gray-500 rounded-sm" />
-              </div>
-            )}
-          </div>
+          <div className={`relative w-[4.25rem] h-[5.25rem] rounded-full bulb-glass ${activated ? 'bulb-on' : 'swing'}`} style={{ transformOrigin: 'top center' }} />
           <div className="w-7 h-3.5 -mt-0.5 rounded-b-md bg-gradient-to-b from-gray-600 to-gray-900 z-10" />
-          <div
-            className="relative flex flex-col items-center cursor-grab active:cursor-grabbing outline-none"
-            style={{
-              transform: `translateY(${pullY}px)`,
-              transition: pulling ? 'none' : 'transform 0.45s cubic-bezier(0.34, 1.4, 0.64, 1)'
-            }}
+          <div className="relative flex flex-col items-center cursor-grab active:cursor-grabbing outline-none"
+            style={{ transform: `translateY(${pullY}px)`, transition: pulling ? 'none' : 'transform 0.45s cubic-bezier(0.34, 1.4, 0.64, 1)' }}
             onMouseDown={(e) => handleStart(e.clientY)}
             onTouchStart={(e) => { e.preventDefault(); handleStart(e.touches[0].clientY); }}
             onTouchMove={(e) => { e.preventDefault(); handleMove(e.touches[0].clientY); }}
             onTouchEnd={handleEnd}
-            onKeyDown={(e) => {
-              if ((e.key === 'Enter' || e.key === ' ') && !activated) {
-                e.preventDefault();
-                doActivate();
-              }
-            }}
-            tabIndex={0}
-            role="button"
-            aria-label="Pull the cord to turn on the light and reveal your schedule"
-          >
+            onKeyDown={(e) => { if ((e.key==='Enter'||e.key===' ') && !activated) { e.preventDefault(); doActivate(); } }}
+            tabIndex={0} role="button" aria-label="Pull the cord to reveal schedule">
             <div className="cord w-[2px]" style={{ height: `${100 + pullY * 0.35}px` }} />
             <div className="cord-handle w-5 h-9 rounded-full flex items-center justify-center">
               <div className="w-1.5 h-1.5 rounded-full bg-gray-500" />
@@ -497,106 +405,56 @@
           </div>
           {!activated && (
             <>
-              <p className="mt-7 text-sm text-warmwhite/55 tracking-wide font-light instruction-pulse">
-                Pull the cord to reveal your schedule
-              </p>
-              <button
-                onClick={doActivate}
-                className="mt-5 text-[11px] text-warmwhite/25 hover:text-warmwhite/55 transition-colors underline underline-offset-2"
-                aria-label="Alternative: Turn on light"
-              >
-                Turn On Light
-              </button>
+              <p className="mt-7 text-sm text-warmwhite/55 tracking-wide font-light instruction-pulse">Pull the cord to reveal your schedule</p>
+              <button onClick={doActivate} className="mt-5 text-[11px] text-warmwhite/25 hover:text-warmwhite/55 transition-colors underline underline-offset-2">Turn On Light</button>
             </>
           )}
         </div>
       );
     }
 
-    // Course Card — never hides on live updates (no opacity:0 on re-render)
-    function CourseCard({ course, index, isLive }) {
+    function CourseCard({ course, isLive }) {
       const [expanded, setExpanded] = useState(false);
       const color = getCategoryColor(course.category);
-
       return (
-        <div
-          className={`course-card relative rounded-xl bg-charcoal/85 backdrop-blur-sm border border-white/[0.06] p-3.5 md:p-4 cursor-pointer ${getCategoryClass(course.category)} ${isLive ? 'course-card-live' : ''}`}
-          style={{ borderLeftColor: isLive ? '#FFD166' : color }}
-          onClick={() => setExpanded(!expanded)}
-        >
+        <div className={`course-card relative rounded-xl bg-charcoal/85 backdrop-blur-sm border border-white/[0.06] p-3.5 md:p-4 cursor-pointer ${getCategoryClass(course.category)} ${isLive ? 'course-card-live' : ''}`}
+          style={{ borderLeftColor: isLive ? '#FFD166' : color }} onClick={() => setExpanded(!expanded)}>
           <div className="flex items-start justify-between gap-2">
-            <h3 className="text-[13px] md:text-[15px] font-semibold text-warmwhite leading-snug">
-              {course.name}
-            </h3>
-            {isLive && (
-              <span className="live-badge shrink-0 mt-0.5" aria-label="Currently in progress">
-                <span className="live-dot" />
-                Live
-              </span>
-            )}
+            <h3 className="text-[13px] md:text-[15px] font-semibold text-warmwhite leading-snug">{course.name}</h3>
+            {isLive && <span className="live-badge shrink-0 mt-0.5"><span className="live-dot" />Live</span>}
           </div>
           <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11px] md:text-xs text-warmwhite/55">
             <span className="inline-flex items-center gap-1">
-              <svg className="w-3 h-3 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+              <svg className="w-3 h-3 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
               {getTimeRange(course)}
             </span>
-            {course.type && (
-              <span className="px-1.5 py-0.5 rounded bg-white/[0.06] text-warmyellow/85 font-medium">
-                {course.type}
-              </span>
-            )}
+            {course.type && <span className="px-1.5 py-0.5 rounded bg-white/[0.06] text-warmyellow/85 font-medium">{course.type}</span>}
             {course.room && (
               <span className="inline-flex items-center gap-1">
-                <svg className="w-3 h-3 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
+                <svg className="w-3 h-3 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                 {course.room}
               </span>
             )}
           </div>
-          {expanded && (
-            <div className="mt-2.5 pt-2.5 border-t border-white/[0.06] text-[11px] text-warmwhite/45 leading-relaxed">
-              {course.raw}
-            </div>
-          )}
+          {expanded && <div className="mt-2.5 pt-2.5 border-t border-white/[0.06] text-[11px] text-warmwhite/45 leading-relaxed">{course.raw}</div>}
         </div>
       );
     }
 
     function Header({ section, onSectionChange }) {
       return (
-        <header className="text-center py-8 md:py-12 px-4 relative z-20 fade-in-up">
-          <p className="text-goldenamber/75 text-[11px] md:text-xs tracking-[0.28em] uppercase font-medium mb-2.5">
-            Ain Shams University — Faculty of Engineering
-          </p>
-          <h1 className="text-3xl md:text-5xl font-bold text-warmwhite text-glow tracking-tight font-manrope">
-            Civil Engineering
-          </h1>
-          <p className="mt-2 text-lg md:text-xl text-warmyellow/90 font-medium tracking-wide">
-            Sophomore — {section}
-          </p>
+        <header className="text-center py-8 md:py-12 px-4 relative z-20">
+          <p className="text-goldenamber/75 text-[11px] md:text-xs tracking-[0.28em] uppercase font-medium mb-2.5">Ain Shams University — Faculty of Engineering</p>
+          <h1 className="text-3xl md:text-5xl font-bold text-warmwhite text-glow tracking-tight font-manrope">Civil Engineering</h1>
+          <p className="mt-2 text-lg md:text-xl text-warmyellow/90 font-medium tracking-wide">Sophomore — {section}</p>
           <div className="mt-3.5 flex justify-center gap-2 text-[11px] text-warmwhite/35">
-            <span>Academic Year 2025-2026</span>
-            <span aria-hidden="true">·</span>
-            <span>General Civil Engineering</span>
+            <span>Academic Year 2025-2026</span><span aria-hidden="true">·</span><span>General Civil Engineering</span>
           </div>
           <div className="mt-6 flex flex-wrap justify-center gap-2 px-2">
             {SCHEDULE_DATA.sectionOrder.map((s) => (
-              <button
-                key={s}
-                onClick={() => onSectionChange(s)}
-                className={`px-4 py-2 rounded-full text-xs md:text-sm font-medium transition-all duration-300 ${
-                  section === s
-                    ? 'bg-goldenamber/20 text-goldenamber border border-goldenamber/40 shadow-[0_0_16px_rgba(245,182,66,0.15)]'
-                    : 'bg-white/[0.04] text-warmwhite/45 border border-white/[0.08] hover:text-warmwhite/70 hover:border-white/15'
-                }`}
-                aria-pressed={section === s}
-              >
-                {s}
-              </button>
+              <button key={s} onClick={() => onSectionChange(s)}
+                className={`px-4 py-2 rounded-full text-xs md:text-sm font-medium transition-all duration-300 ${section === s ? 'bg-goldenamber/20 text-goldenamber border border-goldenamber/40 shadow-[0_0_16px_rgba(245,182,66,0.15)]' : 'bg-white/[0.04] text-warmwhite/45 border border-white/[0.08] hover:text-warmwhite/70 hover:border-white/15'}`}
+                aria-pressed={section === s}>{s}</button>
             ))}
           </div>
         </header>
@@ -609,25 +467,16 @@
           <div className="space-y-5">
             {SCHEDULE_DATA.days.map((day) => {
               const dayCourses = courses.filter(c => c.day === day);
-              if (dayCourses.length === 0) return null;
+              if (!dayCourses.length) return null;
               const isToday = cairo && day === cairo.weekday;
               return (
-                <section
-                  key={day}
-                  className={`rounded-2xl bg-charcoal/40 border border-white/[0.04] p-5 ${isToday ? 'day-section-today' : ''}`}
-                >
+                <section key={day} className={`rounded-2xl bg-charcoal/40 border border-white/[0.04] p-5 ${isToday ? 'day-section-today' : ''}`}>
                   <h2 className={`text-goldenamber font-semibold text-sm tracking-wider mb-4 uppercase ${isToday ? 'day-title-today' : ''}`}>
-                    {day}
-                    {isToday && <span className="today-pill">Today</span>}
+                    {day}{isToday && <span className="today-pill">Today</span>}
                   </h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3.5">
                     {dayCourses.map((course, i) => (
-                      <CourseCard
-                        key={`${day}-${course.name}-${course.startTime}-${i}`}
-                        course={course}
-                        index={i}
-                        isLive={isCourseLive(course, cairo)}
-                      />
+                      <CourseCard key={`${day}-${course.name}-${course.startTime}-${i}`} course={course} isLive={isCourseLive(course, cairo)} />
                     ))}
                   </div>
                 </section>
@@ -643,25 +492,16 @@
         <div className="lg:hidden px-4 pb-10 space-y-7">
           {SCHEDULE_DATA.days.map((day) => {
             const dayCourses = courses.filter(c => c.day === day);
-            if (dayCourses.length === 0) return null;
+            if (!dayCourses.length) return null;
             const isToday = cairo && day === cairo.weekday;
             return (
-              <section
-                key={day}
-                className={isToday ? 'rounded-2xl border border-white/[0.04] p-4 day-section-today' : ''}
-              >
+              <section key={day} className={isToday ? 'rounded-2xl border border-white/[0.04] p-4 day-section-today' : ''}>
                 <h2 className={`text-goldenamber font-semibold text-base tracking-wide mb-3.5 pb-2 border-b border-goldenamber/15 ${isToday ? 'day-title-today border-goldenamber/30' : ''}`}>
-                  {day}
-                  {isToday && <span className="today-pill">Today</span>}
+                  {day}{isToday && <span className="today-pill">Today</span>}
                 </h2>
                 <div className="space-y-3">
                   {dayCourses.map((course, i) => (
-                    <CourseCard
-                      key={`${day}-${course.name}-${course.startTime}-${i}`}
-                      course={course}
-                      index={i}
-                      isLive={isCourseLive(course, cairo)}
-                    />
+                    <CourseCard key={`${day}-${course.name}-${course.startTime}-${i}`} course={course} isLive={isCourseLive(course, cairo)} />
                   ))}
                 </div>
               </section>
@@ -676,15 +516,9 @@
         <footer className="relative z-20 py-11 px-4 text-center border-t border-white/[0.04] mt-6">
           <div className="max-w-md mx-auto">
             <div className="h-px w-14 bg-gradient-to-r from-transparent via-goldenamber/40 to-transparent mx-auto mb-6" />
-            <p className="text-warmwhite/80 text-sm font-medium tracking-wide">
-              Designed & Developed by Abdelrahman Ashraf
-            </p>
-            <p className="text-warmwhite/35 text-xs mt-1.5 tracking-wider">
-              2401727 — Civil Engineering — Ain Shams University
-            </p>
-            <p className="mt-4 text-[10px] tracking-[0.35em] text-goldenamber/30">
-              CIVIL ENGINEERING // SOPHOMORE // {section}
-            </p>
+            <p className="text-warmwhite/80 text-sm font-medium tracking-wide">Designed & Developed by Abdelrahman Ashraf</p>
+            <p className="text-warmwhite/35 text-xs mt-1.5 tracking-wider">2401727 — Civil Engineering — Ain Shams University</p>
+            <p className="mt-4 text-[10px] tracking-[0.35em] text-goldenamber/30">CIVIL ENGINEERING // SOPHOMORE // {section}</p>
           </div>
         </footer>
       );
@@ -693,24 +527,16 @@
     function Nav({ lightOn, onToggle, cairo }) {
       return (
         <nav className="fixed top-0 inset-x-0 z-50 flex justify-between items-center px-4 md:px-8 py-3.5 bg-gradient-to-b from-nearblack/95 to-transparent backdrop-blur-[2px]">
-          <span className="text-[11px] md:text-xs text-warmwhite/40 font-medium tracking-[0.2em] uppercase shrink-0">
-            ASU · Eng
-          </span>
+          <span className="text-[11px] md:text-xs text-warmwhite/40 font-medium tracking-[0.2em] uppercase shrink-0">ASU · Eng</span>
           {cairo && (
             <div className="live-clock flex flex-col items-center leading-tight select-none px-2" title="Cairo time (Africa/Cairo)">
-              <span className="live-clock-time text-sm md:text-base font-manrope tracking-wider">
-                {cairo.timeStr}
-              </span>
-              <span className="text-[9px] md:text-[10px] text-warmwhite/40 tracking-wide mt-0.5 whitespace-nowrap">
-                {cairo.day} {cairo.month} · {cairo.weekday.slice(0, 3)}
-              </span>
+              <span className="live-clock-time text-sm md:text-base font-manrope tracking-wider">{cairo.timeStr}</span>
+              <span className="text-[9px] md:text-[10px] text-warmwhite/40 tracking-wide mt-0.5 whitespace-nowrap">{cairo.day} {cairo.month} · {cairo.weekday.slice(0,3)}</span>
             </div>
           )}
           <div className="flex gap-4 md:gap-5 text-[12px] md:text-sm items-center shrink-0">
             <a href="#schedule" className="text-warmwhite/55 hover:text-goldenamber transition-colors">Schedule</a>
-            <button onClick={onToggle} className="text-warmwhite/55 hover:text-goldenamber transition-colors" aria-label="Toggle lighting">
-              {lightOn ? 'Dim' : 'Light'}
-            </button>
+            <button onClick={onToggle} className="text-warmwhite/55 hover:text-goldenamber transition-colors">{lightOn ? 'Dim' : 'Light'}</button>
           </div>
         </nav>
       );
@@ -731,7 +557,6 @@
         mq.addEventListener('change', h);
         return () => mq.removeEventListener('change', h);
       }, []);
-
       useEffect(() => {
         const t = setTimeout(() => setPhase('dark'), 1100);
         return () => clearTimeout(t);
@@ -739,62 +564,32 @@
 
       const handleActivate = useCallback(() => {
         setPhase('activating');
-        if (reducedMotion) {
-          setLightOn(true);
-          setPhase('lit');
-          return;
-        }
-        setTimeout(() => {
-          setLightOn(true);
-          setPhase('lit');
-        }, 580);
+        if (reducedMotion) { setLightOn(true); setPhase('lit'); return; }
+        setTimeout(() => { setLightOn(true); setPhase('lit'); }, 580);
       }, [reducedMotion]);
 
       const toggleLight = () => {
-        if (!lightOn) {
-          setLightOn(true);
-          setPhase('lit');
-        } else {
-          setLightOn(false);
-        }
+        if (!lightOn) { setLightOn(true); setPhase('lit'); }
+        else setLightOn(false);
       };
 
       return (
         <div className={`relative min-h-screen transition-colors duration-1000 ${lightOn ? 'bg-nearblack' : 'bg-black'}`}>
-          {lightOn && (
-            <div
-              className="fixed inset-0 pointer-events-none z-0 reveal-light"
-              style={{
-                background: 'radial-gradient(ellipse 85% 55% at 50% 12%, rgba(255,209,102,0.14) 0%, rgba(245,182,66,0.05) 42%, transparent 72%)'
-              }}
-            />
-          )}
+          {lightOn && <div className="fixed inset-0 pointer-events-none z-0 reveal-light" style={{ background: 'radial-gradient(ellipse 85% 55% at 50% 12%, rgba(255,209,102,0.14) 0%, rgba(245,182,66,0.05) 42%, transparent 72%)' }} />}
           {lightOn && <div className="fixed inset-0 blueprint-bg opacity-[0.35] pointer-events-none z-0" />}
-          {lightOn && (
-            <div className="fixed bottom-16 right-3 md:right-8 pointer-events-none z-0 opacity-[0.035] select-none">
-              <p className="text-7xl md:text-8xl font-bold tracking-tighter text-warmwhite">CIVIL</p>
-            </div>
-          )}
+          {lightOn && <div className="fixed bottom-16 right-3 md:right-8 pointer-events-none z-0 opacity-[0.035] select-none"><p className="text-7xl md:text-8xl font-bold tracking-tighter text-warmwhite">CIVIL</p></div>}
           <DustParticles active={lightOn} />
-
           {phase === 'loading' && (
             <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-black">
               <div className="w-11 h-14 rounded-full bulb-glass pulse-glow mb-5" />
               <p className="text-warmwhite/35 text-xs tracking-[0.25em] uppercase">Preparing your schedule...</p>
             </div>
           )}
-
           {phase !== 'loading' && (
             <>
               <Nav lightOn={lightOn} onToggle={toggleLight} cairo={cairo} />
-              {!lightOn && (
-                <div className="fixed inset-0 z-30 flex flex-col items-center justify-center">
-                  <PullCord onActivate={handleActivate} reducedMotion={reducedMotion} />
-                </div>
-              )}
-              {phase === 'activating' && (
-                <div className="fixed inset-0 z-40 pointer-events-none bg-black flicker" />
-              )}
+              {!lightOn && <div className="fixed inset-0 z-30 flex flex-col items-center justify-center"><PullCord onActivate={handleActivate} /></div>}
+              {phase === 'activating' && <div className="fixed inset-0 z-40 pointer-events-none bg-black flicker" />}
               {lightOn && (
                 <main id="schedule" className="relative z-20 pt-16 reveal-light">
                   <Header section={section} onSectionChange={setSection} />
